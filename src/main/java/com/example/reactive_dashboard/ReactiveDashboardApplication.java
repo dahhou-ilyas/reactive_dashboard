@@ -37,6 +37,8 @@ public class ReactiveDashboardApplication {
                             .map(name -> new Societe(name,name,generateRandomPrice()))
                             .flatMap(societe -> societeRopisotory.save(societe));
 
+
+                    // attendre le societeFlux jusqu'a il finer aprée le faire autre traitment
                     societeFlux.thenMany(societeRopisotory.findAll())
                             .flatMap(this::generateTransactionsForSociete)
                             .flatMap(transaction -> transactionRepository.save(transaction))
