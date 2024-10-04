@@ -31,18 +31,22 @@ public class ReactiveDashboardApplication {
                     "COSUMAR", "MARSA MAROC", "LAFARGEHOLCIM", "TAQA MOROCCO", "MANAGEM", "CIH",
                     "ATLANTA", "LESIEUR CRISTAL", "SONASID", "TOTAL MAROC", "RISMA", "HPS"};
 
-            Flux<Societe> societeFlux = Flux.fromArray(societeNames)
-                    .map(name -> new Societe(name,name,generateRandomPrice()))
-                    .flatMap(societe -> societeRopisotory.save(societe));
+            transactionRepository.deleteAll().subscribe(null,null,()->{
+                societeRopisotory.deleteAll().subscribe(null,null,()->{
+                    Flux<Societe> societeFlux = Flux.fromArray(societeNames)
+                            .map(name -> new Societe(name,name,generateRandomPrice()))
+                            .flatMap(societe -> societeRopisotory.save(societe));
 
-            societeFlux.thenMany(societeRopisotory.findAll())
-                    .flatMap(this::generateTransactionsForSociete)
-                    .flatMap(transaction -> transactionRepository.save(transaction))
-                    .subscribe(
-                            transaction -> System.out.println("Saved transaction: " + transaction),
-                            error -> System.err.println("Error occurred: " + error),
-                            () -> System.out.println("Initialization completed!")
-                    );
+                    societeFlux.thenMany(societeRopisotory.findAll())
+                            .flatMap(this::generateTransactionsForSociete)
+                            .flatMap(transaction -> transactionRepository.save(transaction))
+                            .subscribe(
+                                    transaction -> System.out.println("Saved transaction: " + transaction),
+                                    error -> System.err.println("Error occurred: " + error),
+                                    () -> System.out.println("Initialization completed!")
+                            );
+                });
+            });
         };
     }
 
