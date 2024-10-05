@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuple2;
 
 import java.time.Duration;
 
@@ -74,10 +73,10 @@ public class TransactionReactiveController {
     }
 
     @GetMapping(value = "/stream/transactions/societe/{societeId}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Tuple2<Long, Transaction>> streamTransactionsSociete(@PathVariable String societeId) {
+    public Flux<Transaction> streamTransactionsSociete(@PathVariable String societeId) {
         Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
         return societeRepository.findById(societeId)
-                .flatMapMany(soc -> Flux.zip(interval, transactionRepository.findBySociete(soc)))
+                .flatMapMany(soc -> Flux.zip(interval, transactionRepository.findBySociete(soc)).map(data->data.getT2()))
                 .switchIfEmpty(Flux.empty())
                 .doOnComplete(() -> System.out.println("Nous avons terminé"));
     }
