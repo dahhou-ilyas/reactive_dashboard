@@ -31,6 +31,9 @@ public class TransactionReactiveController {
     @PostMapping("/transactions")
     public Mono<Transaction> save(@RequestBody Transaction transaction){
 
+        //dans cette traitemetn on peut mette seulement le id de la societer sans besoin de faire tous les info
+        //c'est à dire dans le body de requet on passe le id de la societer et on stocker dans transaction selement le un objet societer qui contienne le id de la societe et les autre attribue null
+        //car si on trouve seulement le id on peut connue le societe deouit societer repository
         Mono<Transaction> transactionMono = societeRepository.findById(transaction.getSociete().getId())
                 .switchIfEmpty(Mono.error(new RuntimeException("Société non trouvée !")))
                 .flatMap(societe -> {
