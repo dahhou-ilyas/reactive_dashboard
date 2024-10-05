@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.Instant;
 
@@ -17,6 +18,5 @@ public class Transaction {
     private String id;
     private Instant instant;
     private Double price;
-    @DBRef
     private Societe societe;
 }
