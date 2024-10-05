@@ -19,5 +19,6 @@ public class Transaction {
     private String id;
     private Instant instant;
     private Double price;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Societe societe;
 }
