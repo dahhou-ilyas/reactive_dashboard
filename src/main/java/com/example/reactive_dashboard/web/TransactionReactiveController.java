@@ -8,8 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.time.Duration;
 
 
 @RestController
@@ -61,7 +62,7 @@ public class TransactionReactiveController {
         return transactionRepository.findAll();
     }
 
-    @GetMapping(value = "/stream/transactions/societe/{societeId}")
+    @GetMapping(value = "/transactions/societe/{societeId}")
     public Flux<Transaction> transactionsSociete(@PathVariable String societeId) {
         return societeRepository.findById(societeId)
                 .flatMapMany(soc -> {
@@ -70,5 +71,14 @@ public class TransactionReactiveController {
                 })
                 .switchIfEmpty(Flux.empty()) // Si aucun societe n'est trouvé
                 .doOnComplete(() -> System.out.println("Nous avons terminé")); // Callback pour indiquer la fin
+    }
+
+    @GetMapping(value = "/stream/transactions/societe/{societeId}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Tuple2<Long, Transaction>> streamTransactionsSociete(@PathVariable String societeId) {
+        Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
+        return societeRepository.findById(societeId)
+                .flatMapMany(soc -> Flux.zip(interval, transactionRepository.findBySociete(soc)))
+                .switchIfEmpty(Flux.empty())
+                .doOnComplete(() -> System.out.println("Nous avons terminé"));
     }
 }
