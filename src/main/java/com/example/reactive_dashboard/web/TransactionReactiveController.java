@@ -5,6 +5,7 @@ import com.example.reactive_dashboard.dao.TransactionRepository;
 import com.example.reactive_dashboard.entities.Societe;
 import com.example.reactive_dashboard.entities.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -52,5 +53,10 @@ public class TransactionReactiveController {
     public Mono<Transaction> update(@PathVariable String id, @RequestBody Transaction transaction){
         transaction.setId(id);
         return transactionRepository.save(transaction);
+    }
+
+    @GetMapping(value = "/stream/transactions",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Transaction> streamTransactions(){
+        return transactionRepository.findAll();
     }
 }
