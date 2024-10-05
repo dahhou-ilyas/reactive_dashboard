@@ -2,13 +2,14 @@ package com.example.reactive_dashboard.web;
 
 import com.example.reactive_dashboard.dao.SocieteRopisotory;
 import com.example.reactive_dashboard.dao.TransactionRepository;
-import com.example.reactive_dashboard.entities.Societe;
 import com.example.reactive_dashboard.entities.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @RestController
@@ -58,5 +59,16 @@ public class TransactionReactiveController {
     @GetMapping(value = "/stream/transactions",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Transaction> streamTransactions(){
         return transactionRepository.findAll();
+    }
+
+    @GetMapping(value = "/stream/transactions/societe/{societeId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Transaction> transactionsSociete(@PathVariable String societeId) {
+        return societeRepository.findById(societeId)
+                .flatMapMany(soc -> {
+                    System.out.println(soc.toString());
+                    return transactionRepository.findBySociete(soc);
+                })
+                .switchIfEmpty(Flux.empty()) // Si aucun societe n'est trouvé
+                .doOnComplete(() -> System.out.println("Nous avons terminé")); // Callback pour indiquer la fin
     }
 }
