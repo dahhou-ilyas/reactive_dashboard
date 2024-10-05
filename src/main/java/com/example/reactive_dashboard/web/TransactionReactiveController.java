@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 public class TransactionReactiveController {
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private SocieteRopisotory societeRepository;
 
 
     @GetMapping(value = "/transactions")
@@ -28,7 +30,14 @@ public class TransactionReactiveController {
 
     @PostMapping("/transactions")
     public Mono<Transaction> save(@RequestBody Transaction transaction){
-        return transactionRepository.save(transaction);
+
+        Mono<Transaction> transactionMono = societeRepository.findById(transaction.getSociete().getId())
+                .switchIfEmpty(Mono.error(new RuntimeException("Société non trouvée !")))
+                .flatMap(societe -> {
+                    transaction.setSociete(societe);
+                    return transactionRepository.save(transaction);
+                });
+        return transactionMono;
     }
 
     @DeleteMapping(value = "/transactions/{id}")
