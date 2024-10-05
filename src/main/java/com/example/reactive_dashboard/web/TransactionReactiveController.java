@@ -61,12 +61,12 @@ public class TransactionReactiveController {
         return transactionRepository.findAll();
     }
 
-    @GetMapping(value = "/stream/transactions/societe/{societeId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @GetMapping(value = "/stream/transactions/societe/{societeId}")
     public Flux<Transaction> transactionsSociete(@PathVariable String societeId) {
         return societeRepository.findById(societeId)
                 .flatMapMany(soc -> {
-                    System.out.println(soc.toString());
-                    return transactionRepository.findBySociete(soc);
+                    Flux<Transaction> bySociete = transactionRepository.findBySociete(soc);
+                    return bySociete;
                 })
                 .switchIfEmpty(Flux.empty()) // Si aucun societe n'est trouvé
                 .doOnComplete(() -> System.out.println("Nous avons terminé")); // Callback pour indiquer la fin
