@@ -10,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.time.Instant;
 
 
 @RestController
@@ -80,4 +81,40 @@ public class TransactionReactiveController {
                 .switchIfEmpty(Flux.empty())
                 .doOnComplete(() -> System.out.println("Nous avons terminé"));
     }
+
+    @GetMapping(value = "/events/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Event> events(@PathVariable String id) {
+
+    }
 }
+
+class Event {
+    private Instant instant;
+    private double value;
+    private String societeId;
+
+    public Instant getInstant() {
+        return instant;
+    }
+
+    public void setInstant(Instant instant) {
+        this.instant = instant;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public String getSocieteId() {
+        return societeId;
+    }
+
+    public void setSocieteId(String societeId) {
+        this.societeId = societeId;
+    }
+}
+
