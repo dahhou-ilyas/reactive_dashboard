@@ -6,6 +6,7 @@ import com.example.reactive_dashboard.entities.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -83,8 +84,14 @@ public class TransactionReactiveController {
     }
 
     @GetMapping(value = "/events/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Event> events(@PathVariable String id) {
+    public Flux<Double> events(@PathVariable String id) {
+        WebClient webClient = WebClient.create("http://localhost:8081");
+        Flux<Double> eventFlux = webClient.get()
+                .uri("/streamEvents/"+id)
+                .retrieve().bodyToFlux(Event.class)
+                .map(data->data.getValue());
 
+        return eventFlux;
     }
 }
 
