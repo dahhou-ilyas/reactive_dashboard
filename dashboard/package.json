@@ -1,0 +1,19 @@
+{
+  "name": "dashboard",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node_modules/.bin/vite",
+    "build": "node_modules/.bin/vite build",
+    "preview": "node_modules/.bin/vite preview"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "svelte": "^4.2.19",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.4"
+  }
+}

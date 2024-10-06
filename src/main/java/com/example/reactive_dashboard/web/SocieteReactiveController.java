@@ -9,6 +9,7 @@ import reactor.core.publisher.Mono;
 
 
 @RestController
+@CrossOrigin("*")
 public class SocieteReactiveController {
     @Autowired
     private SocieteRopisotory societeRopisotory;

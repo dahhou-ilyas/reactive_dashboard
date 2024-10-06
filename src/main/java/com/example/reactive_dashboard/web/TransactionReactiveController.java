@@ -15,6 +15,7 @@ import java.time.Instant;
 
 
 @RestController
+@CrossOrigin("*")
 public class TransactionReactiveController {
     @Autowired
     private TransactionRepository transactionRepository;
