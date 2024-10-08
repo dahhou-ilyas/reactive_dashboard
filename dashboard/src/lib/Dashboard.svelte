@@ -1,6 +1,10 @@
 <script>
     import { onMount,onDestroy } from 'svelte';
     import Chart from 'chart.js/auto'
+    import { idSoc } from './store.js';
+    
+    let selectedSocietyId;
+    $: selectedSocietyId = $idSoc;
     
     let chart;
 
@@ -11,6 +15,14 @@
     const maxDataPoints = 20; 
 
     let eventSource;
+
+    $: if (selectedSocietyId) {
+      console.log("$$$$$$$$$$$$$$$$$$$$$");
+      console.log(selectedSocietyId);
+      console.log("$$$$$$$$$$$$$$$$$$$$$"); 
+    }
+
+
 
     function updateChart(newValue){
         if(data.length > maxDataPoints){

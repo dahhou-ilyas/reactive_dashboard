@@ -1,12 +1,18 @@
 <script>
     import { onMount } from 'svelte';
-
+    import {idSoc} from "./store.js";
+ 
     let societies = [];
 
     onMount(async () => {
         const response = await fetch('http://localhost:8080/societs');
         societies = await response.json();
     });
+
+    function addTransaction(event) {
+        const idSociet = event.target.dataset.idSociet;
+        idSoc.set(idSociet);
+    }
 </script>
 
 <style>
@@ -41,8 +47,8 @@
 
 <div class="society-list">
     {#each societies as society}
-        <div class="society-item">
-            <h3>{society.name}</h3>
-        </div>
+      <button on:click={addTransaction} class="society-item" data-id-societ={society.id}>
+        <h3>{society.id}</h3>
+      </button>
     {/each}
 </div>
