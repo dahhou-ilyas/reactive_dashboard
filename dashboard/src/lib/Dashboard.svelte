@@ -17,9 +17,20 @@
     let eventSource;
 
     $: if (selectedSocietyId) {
-      console.log("$$$$$$$$$$$$$$$$$$$$$");
       console.log(selectedSocietyId);
-      console.log("$$$$$$$$$$$$$$$$$$$$$"); 
+      if (eventSource) {
+        eventSource.close();
+      }
+      eventSource = new EventSource(`http://localhost:8080/stream/transactions/societe/${selectedSocietyId}`);
+      eventSource.onmessage = (event) => {
+        let price=JSON.parse(event.data).price;
+        console.log(price);
+        updateChart(price);
+      };
+      eventSource.onerror = (error) => {
+        console.error('EventSource failed:', error);
+        eventSource.close();
+      };
     }
 
 
@@ -33,6 +44,7 @@
         chart.data.datasets[0].data = data;
         chart.update();
     }
+
     onMount(()=>{
         chart = new Chart(chartElement,{
             type: 'line',
@@ -56,18 +68,6 @@
               }
             }
         });
-
-        eventSource = new EventSource('http://localhost:8080/events/SG');
-
-        eventSource.onmessage = (event) => {
-          console.log(data);
-          updateChart(parseFloat(event.data)/10);
-        };
-
-        eventSource.onerror = (error) => {
-          console.error('EventSource failed:', error);
-          eventSource.close();
-        };
     });
     onDestroy(() => {
     if (eventSource) {
